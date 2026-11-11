@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "md-explorer": {
+      "command": "npx",
+      "args": ["-y", "md-explorer@0", "mcp"]
+    }
+  }
+}

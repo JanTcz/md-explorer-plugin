@@ -1,0 +1,49 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [22, 24, 26]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+      # Every test, and 100 % lines, branches and functions of src/.
+      - run: npm test
+
+  # The oldest supported Node: the tests without the coverage gate (its flags came in Node 22).
+  node-20:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - run: node --test test/*.test.js
+
+  # What npm would publish installs and runs.
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26
+      - run: npm pack
+      - run: |
+          cd "$(mktemp -d)" && git init -q
+          npm install --no-save "$GITHUB_WORKSPACE"/md-explorer-*.tgz
+          test -f node_modules/md-explorer/web/index.html
+          test -f node_modules/md-explorer/agents/skills/md-explorer/SKILL.md
+          echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | npx md-explorer mcp | grep -q explorer_selection

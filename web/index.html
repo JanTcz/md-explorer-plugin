@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>md-explorer</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23c96442'/%3E%3Cpath d='M3 12V4h2l3 4 3-4h2v8h-2V7l-3 4-3-4v5z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="vendor/hljs-light.css" media="(prefers-color-scheme: light)">
+  <link rel="stylesheet" href="vendor/hljs-dark.css" media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <button id="toggle-sidebar" class="icon" title="Toggle sidebar ([)" aria-label="Toggle sidebar">☰</button>
+    <nav id="crumbs" class="crumbs" aria-label="Path"></nav>
+    <div class="spacer"></div>
+    <div class="seg" role="group" aria-label="View">
+      <button id="view-rendered" class="on" title="Rendered (s)">Rendered</button>
+      <button id="view-source" title="Source with line numbers (s)">Source</button>
+    </div>
+    <button id="open-search" class="search-btn" title="Search (Ctrl+K or /)">Search <kbd>/</kbd></button>
+  </header>
+
+  <aside id="sidebar" class="sidebar" aria-label="Files">
+    <input id="filter" type="search" placeholder="Filter files…" aria-label="Filter files" autocomplete="off">
+    <div id="tree" class="tree"></div>
+    <div id="root-name" class="root-name"></div>
+  </aside>
+
+  <main id="main" class="main">
+    <article id="doc" class="doc" tabindex="-1"></article>
+  </main>
+
+  <aside id="toc" class="toc" aria-label="On this page"></aside>
+
+  <div id="selbar" class="selbar" hidden>
+    <code id="selref"></code>
+    <button id="sel-copy" title="Copy the reference (c)">Copy ref</button>
+    <button id="sel-copy-text" title="Copy the reference and the selected text (Shift+C)">Copy with text</button>
+    <button id="sel-clear" class="icon" title="Clear selection (Esc)" aria-label="Clear selection">✕</button>
+  </div>
+
+  <div id="palette" class="palette" hidden>
+    <div class="palette-box" role="dialog" aria-label="Search">
+      <input id="q" type="search" placeholder="Search all docs…" autocomplete="off" aria-label="Search all docs">
+      <ul id="results" class="results"></ul>
+      <div class="palette-foot"><kbd>↑</kbd><kbd>↓</kbd> move <kbd>Enter</kbd> open <kbd>Esc</kbd> close</div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <script src="vendor/marked.min.js"></script>
+  <script src="vendor/purify.min.js"></script>
+  <script src="vendor/highlight.min.js"></script>
+  <script src="vendor/minisearch.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

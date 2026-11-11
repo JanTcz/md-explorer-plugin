@@ -1,0 +1,42 @@
+{
+  "name": "md-explorer",
+  "version": "0.1.0",
+  "description": "Read a folder of Markdown files in the browser: tree, search, rendered and source view, and a reference to any section or line that you paste to Claude. CLI, MCP server and a Claude Code plugin. No runtime dependencies.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Jan Truhlar <me@jant.cz>",
+  "homepage": "https://github.com/JanTcz/md-explorer#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JanTcz/md-explorer.git"
+  },
+  "bugs": "https://github.com/JanTcz/md-explorer/issues",
+  "bin": {
+    "md-explorer": "./bin/md-explorer.js"
+  },
+  "files": [
+    "src",
+    "web",
+    "bin",
+    "agents"
+  ],
+  "scripts": {
+    "start": "node bin/md-explorer.js",
+    "test": "node --test --experimental-test-coverage --test-coverage-include='src/**' --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 test/*.test.js"
+  },
+  "keywords": [
+    "markdown",
+    "docs",
+    "wiki",
+    "viewer",
+    "claude-code",
+    "mcp",
+    "mcp-server"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

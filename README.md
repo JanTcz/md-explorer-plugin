@@ -1,6 +1,6 @@
 # md-explorer
 
-[![test](https://github.com/JanTcz/md-explorer/actions/workflows/test.yml/badge.svg)](https://github.com/JanTcz/md-explorer/actions/workflows/test.yml)
+[![test](https://github.com/JanTcz/md-explorer-plugin/actions/workflows/test.yml/badge.svg)](https://github.com/JanTcz/md-explorer-plugin/actions/workflows/test.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 **Read a folder of Markdown files in the browser, and point Claude at exactly the
@@ -44,7 +44,7 @@ runtime dependencies: Node 20+ and a browser.
 The plugin is the MCP server and a skill that tells Claude how to use it.
 
 ```
-/plugin install md-explorer --marketplace JanTcz/md-explorer
+/plugin install md-explorer --marketplace JanTcz/marketplace
 ```
 
 Then ask Claude to open the docs, or run `/md-explorer:open`. A browser tab opens

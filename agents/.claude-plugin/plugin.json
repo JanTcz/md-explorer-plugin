@@ -7,8 +7,8 @@
     "email": "me@jant.cz",
     "url": "https://github.com/JanTcz"
   },
-  "homepage": "https://github.com/JanTcz/md-explorer",
-  "repository": "https://github.com/JanTcz/md-explorer",
+  "homepage": "https://github.com/JanTcz/md-explorer-plugin",
+  "repository": "https://github.com/JanTcz/md-explorer-plugin",
   "license": "MIT",
   "keywords": ["markdown", "docs", "wiki", "viewer", "mcp"]
 }

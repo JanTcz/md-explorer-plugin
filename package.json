@@ -5,12 +5,12 @@
   "type": "module",
   "license": "MIT",
   "author": "Jan Truhlar <me@jant.cz>",
-  "homepage": "https://github.com/JanTcz/md-explorer#readme",
+  "homepage": "https://github.com/JanTcz/md-explorer-plugin#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JanTcz/md-explorer.git"
+    "url": "git+https://github.com/JanTcz/md-explorer-plugin.git"
   },
-  "bugs": "https://github.com/JanTcz/md-explorer/issues",
+  "bugs": "https://github.com/JanTcz/md-explorer-plugin/issues",
   "bin": {
     "md-explorer": "./bin/md-explorer.js"
   },

@@ -178,6 +178,19 @@ test('navigate resolves project-relative refs, docs-relative refs and slugs; tel
     await stream.close();
   }));
 
+test('POST /api/navigate points the tabs and answers where; a bad ref is a 400', () =>
+  withServer(async server => {
+    const stream = await events(server);
+    await new Promise(r => setTimeout(r, 50));
+    const res = await post(server, '/api/navigate', { ref: 'docs/README.md:10-12' });
+    assert.equal(res.status, 200);
+    assert.deepEqual(res.body, { target: { path: 'README.md', start: 10, end: 12, ref: 'docs/README.md:10-12' }, tabs: 1 });
+    assert.deepEqual(await stream.next('navigate'), { path: 'README.md', start: 10, end: 12 });
+    assert.equal((await post(server, '/api/navigate', {})).status, 400);
+    assert.equal((await post(server, '/api/navigate', { ref: 'docs/nope.md' })).status, 400);
+    await stream.close();
+  }));
+
 test('navigate without tabs says so; tabs() counts open streams', () =>
   withServer(async server => {
     assert.equal(server.tabs(), 0);

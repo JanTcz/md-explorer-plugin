@@ -1,6 +1,5 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { PassThrough } from 'node:stream';
 import { DEFAULT_PORT, main } from '../src/cli.js';
 import { get, project, SAMPLE } from './helpers.js';
 
@@ -73,24 +72,6 @@ test('dir and port come from arguments or the environment; --open launches the b
     assert.equal(await main(['two', '--port=0', '--open'], b.opts), 0);
     assert.match(opened[0], /^http:\/\/localhost:\d+\/$/);
     assert.equal(DEFAULT_PORT, 4477);
-  } finally {
-    await p.cleanup();
-  }
-});
-
-test('mcp: stdout carries only protocol, the address goes to stderr, the server stops with stdin', async () => {
-  const p = await project(SAMPLE);
-  try {
-    const stdin = new PassThrough();
-    const a = io({ cwd: p.dir, stdin });
-    const run = main(['mcp', '--port', '0'], a.opts);
-    stdin.write(JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }) + '\n');
-    stdin.end();
-    assert.equal(await run, 0);
-    assert.match(a.err.join(''), /md-explorer: http:\/\/localhost:\d+\//);
-    assert.equal(a.out.length, 1);
-    assert.match(JSON.parse(a.out[0]).result.tools[0].name, /^explorer_/);
-    assert.doesNotMatch(a.out.join(''), /localhost/);
   } finally {
     await p.cleanup();
   }

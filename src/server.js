@@ -1,6 +1,6 @@
 // The local web server: the browser app (web/), a small JSON API over the docs folder,
-// a Server-Sent Events stream (file changes, "look here" from Claude) and the selection
-// the person made in the browser, which Claude reads back through the MCP server.
+// a Server-Sent Events stream (file changes, "look here" from Claude via POST /api/navigate) and the selection
+// the person made in the browser, which Claude reads back over HTTP (GET /api/selection).
 // Bound to 127.0.0.1 only, read-only on the docs folder, no dependencies.
 
 import http from 'node:http';
@@ -37,7 +37,7 @@ const toPosix = p => p.split(path.sep).join('/');
 
 /**
  * Starts the server. `root` is the docs folder, `cwd` the project it belongs to (references are
- * relative to it, so Claude can open them). With `fallback`, a busy `port` is replaced by a free one; `pingMs` is the keep-alive of event streams. Resolves to `{ url, port, close, navigate, selection }`.
+ * relative to it, so Claude can open them). With `fallback`, a busy `port` is replaced by a free one; `pingMs` is the keep-alive of event streams. Resolves to `{ url, port, close, navigate, selection }`; `navigate` is also `POST /api/navigate {ref}`.
  */
 export async function startServer({ root, cwd = process.cwd(), port = 0, host = '127.0.0.1', fallback = false, pingMs = 25_000 }) {
   root = await fs.realpath(path.resolve(root));
@@ -92,6 +92,13 @@ export async function startServer({ root, cwd = process.cwd(), port = 0, host = 
     } catch {
       return null; // the file is gone since
     }
+  }
+
+  /** Tells every open browser tab to scroll to a reference; resolves to `{ target, tabs }`. */
+  async function navigate(refText) {
+    const { doc, ...target } = await locate(refText);
+    broadcast('navigate', target);
+    return { target: { ...target, ref: formatRef({ ...target, path: refBase ? `${refBase}/${target.path}` : target.path }) }, tabs: clients.size };
   }
 
   const readBody = req =>
@@ -167,6 +174,7 @@ export async function startServer({ root, cwd = process.cwd(), port = 0, host = 
       // JSON only: a cross-site form cannot send this, a cross-site script is stopped by the Origin check.
       if (!/^application\/json/.test(req.headers['content-type'] ?? '')) return fail(res, 415, 'Send application/json');
       const body = await readBody(req);
+      if (url.pathname === '/api/navigate') return send(res, 200, await navigate(body.ref));
       if (url.pathname === '/api/selection') {
         if (body.clear) selection = undefined;
         else {
@@ -258,12 +266,7 @@ export async function startServer({ root, cwd = process.cwd(), port = 0, host = 
     port: actual,
     root,
     refBase,
-    /** Tells every open browser tab to scroll to a reference; resolves to `{ target, tabs }`. */
-    async navigate(refText) {
-      const { doc, ...target } = await locate(refText);
-      broadcast('navigate', target);
-      return { target: { ...target, ref: formatRef({ ...target, path: refBase ? `${refBase}/${target.path}` : target.path }) }, tabs: clients.size };
-    },
+    navigate,
     selection: currentSelection,
     tabs: () => clients.size,
     close() {

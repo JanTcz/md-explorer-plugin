@@ -1,10 +1,9 @@
 // md-explorer [dir] [--port N] [--open]   serve the docs folder in the browser
-// md-explorer mcp [dir]                   the same, plus an MCP server on stdio for Claude
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { startServer } from './server.js';
-import { createTools, openBrowser, serve } from './mcp.js';
+import { openBrowser } from './open.js';
 
 export const DEFAULT_PORT = 4477;
 
@@ -12,10 +11,10 @@ const HELP = `md-explorer: read a folder of Markdown files in the browser
 
 Usage:
   md-explorer [dir] [--port N] [--open]   serve dir (default: docs/ if it exists, else the current folder)
-  md-explorer mcp [dir] [--port N]        the same, plus an MCP server on stdio for Claude Code
 
 The docs folder can also be set with MD_EXPLORER_ROOT, the port with MD_EXPLORER_PORT (default ${DEFAULT_PORT}; a busy one is replaced by a free one).
-The server listens on localhost only and never writes to the docs folder.
+The address is printed on the first line. The server listens on localhost only and never writes to the docs folder.
+Stop it with Ctrl+C (or by killing the process).
 `;
 
 function parse(argv) {
@@ -44,7 +43,7 @@ const forever = () => new Promise(() => {}); // until the process is stopped; bi
 /* node:coverage enable */
 
 /** Runs the command line; resolves to the exit code. `io` is replaceable in tests. */
-export async function main(argv, { env = process.env, cwd = process.cwd(), stdout = process.stdout, stderr = process.stderr, stdin = process.stdin, waitForExit = forever, open = openBrowser } = {}) {
+export async function main(argv, { env = process.env, cwd = process.cwd(), stdout = process.stdout, stderr = process.stderr, waitForExit = forever, open = openBrowser } = {}) {
   let args;
   try {
     args = parse(argv);
@@ -56,8 +55,7 @@ export async function main(argv, { env = process.env, cwd = process.cwd(), stdou
     stdout.write(HELP);
     return 0;
   }
-  const isMcp = args.positional[0] === 'mcp';
-  const dir = (isMcp ? args.positional[1] : args.positional[0]) ?? env.MD_EXPLORER_ROOT;
+  const dir = args.positional[0] ?? env.MD_EXPLORER_ROOT;
   const rawPort = args.port ?? env.MD_EXPLORER_PORT ?? String(DEFAULT_PORT);
   const port = Number(rawPort);
   if (!Number.isInteger(port) || port < 0 || port > 65535) {
@@ -71,13 +69,6 @@ export async function main(argv, { env = process.env, cwd = process.cwd(), stdou
     return 1;
   }
   const server = await startServer({ root, cwd, port, fallback: true });
-  if (isMcp) {
-    // stdout belongs to the protocol: everything human goes to stderr.
-    stderr.write(`md-explorer: ${server.url} (${root})\n`);
-    await serve(createTools(server), stdin, stdout);
-    await server.close();
-    return 0;
-  }
   stdout.write(`md-explorer: ${server.url} (${root})\n`);
   if (args.open) await open(server.url);
   await waitForExit();

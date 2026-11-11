@@ -1,5 +1,5 @@
 // References into the docs ("docs/a.md:12-40 (§ A > B)"): written and read by the browser
-// app, the server and the MCP tools alike. Pure functions, no Node and no DOM, so the
+// app and the server alike. Pure functions, no Node and no DOM, so the
 // browser loads this very file (the server serves it as /shared/refs.js).
 
 /**
